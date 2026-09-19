@@ -12,8 +12,8 @@ import { FilterDrawer } from './components/Filters/FilterDrawer';
 import { Sparkles, Info } from 'lucide-react';
 
 export function App() {
-  // Center on August 2026
-  const [currentDate, setCurrentDate] = useState<Date>(() => new Date(2026, 7, 25)); // 25 Aug 2026
+  // Center dynamically on the current date
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [entries, setEntries] = useState<Entry[]>(() => loadStoredEntries());
 
@@ -97,7 +97,7 @@ export function App() {
   };
 
   const handleToday = () => {
-    setCurrentDate(new Date(2026, 7, 25)); // Aug 25, 2026
+    setCurrentDate(new Date());
     setViewMode('week');
   };
 
@@ -166,7 +166,7 @@ export function App() {
   const handleLoadDemoSample = () => {
     const demo = loadDemoSampleEntries();
     setEntries(demo);
-    setCurrentDate(new Date(2026, 7, 25));
+    setCurrentDate(new Date());
   };
 
   // Quick slot click in calendar

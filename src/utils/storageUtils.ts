@@ -1,4 +1,4 @@
-import { DEMO_ENTRIES } from '../data/sampleEntries';
+import { getDemoEntries } from '../data/sampleEntries';
 import type { Entry } from '../types';
 
 const STORAGE_KEY = 'stroll_exploration_entries_v2';
@@ -39,10 +39,11 @@ export function clearAllEntries(): Entry[] {
 }
 
 export function loadDemoSampleEntries(): Entry[] {
+  const freshDemo = getDemoEntries();
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_ENTRIES));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(freshDemo));
   } catch (err) {
     console.error('Failed to load demo entries', err);
   }
-  return DEMO_ENTRIES;
+  return freshDemo;
 }
