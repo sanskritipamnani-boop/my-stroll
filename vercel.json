@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/plixet",
+      "destination": "/plixet.html"
+    },
+    {
+      "source": "/plixet/(.*)",
+      "destination": "/plixet.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

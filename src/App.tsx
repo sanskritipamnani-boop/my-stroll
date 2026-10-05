@@ -14,7 +14,7 @@ import { Sparkles, Info } from 'lucide-react';
 export function App() {
   // Center dynamically on the current date
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [entries, setEntries] = useState<Entry[]>(() => loadStoredEntries());
 
   // Filter State
@@ -98,7 +98,6 @@ export function App() {
 
   const handleToday = () => {
     setCurrentDate(new Date());
-    setViewMode('week');
   };
 
   // CRUD Handlers
