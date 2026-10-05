@@ -172,17 +172,6 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             )}
           </button>
 
-          {/* Plixet Case Study Link */}
-          <a
-            href="/plixet"
-            title="Open PLIXET Case Study"
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-2xl border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100/90 text-amber-900 transition-all shadow-2xs hover:scale-[1.02]"
-          >
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="hidden sm:inline">Plixet Case Study</span>
-            <span className="sm:hidden">Plixet</span>
-          </a>
-
           {/* Add Entry Button */}
           <Button
             variant="primary"
