@@ -13,6 +13,7 @@ interface EntryModalProps {
   onSave: (entry: Omit<Entry, 'id' | 'createdAt'> & { id?: string }) => void;
   initialDate?: string;
   initialHour?: number;
+  initialCategory?: CategoryId;
   editingEntry?: Entry | null;
 }
 
@@ -34,10 +35,11 @@ export const EntryModal: React.FC<EntryModalProps> = ({
   onSave,
   initialDate,
   initialHour,
+  initialCategory,
   editingEntry,
 }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<CategoryId>('ux');
+  const [category, setCategory] = useState<CategoryId>(initialCategory || 'product-ideas');
   const [date, setDate] = useState(initialDate || formatDateIso(new Date()));
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('11:00');
@@ -70,7 +72,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
     } else {
       // Reset for new entry
       setTitle('');
-      setCategory('ux');
+      setCategory(initialCategory || 'product-ideas');
       const baseDate = initialDate || formatDateIso(new Date());
       setDate(baseDate);
 
@@ -88,7 +90,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
       setTags([]);
       setTagInput('');
     }
-  }, [isOpen, editingEntry, initialDate, initialHour]);
+  }, [isOpen, editingEntry, initialDate, initialHour, initialCategory]);
 
   const handleAddTag = (tagToAdd: string) => {
     const cleaned = tagToAdd.trim().toLowerCase().replace(/^[#]/, '');

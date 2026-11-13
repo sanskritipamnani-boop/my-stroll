@@ -1,24 +1,10 @@
 import type { Category, CategoryId } from '../types';
 
 export const CATEGORIES: Record<CategoryId, Category> = {
-  'ux': {
-    id: 'ux',
-    name: 'UX',
-    icon: '🧠',
-    description: 'Interaction patterns, mental models & usability friction',
-    color: {
-      bg: 'bg-[#F0F2FE]',
-      border: 'border-[#D9DDFB]',
-      text: 'text-[#3E42A8]',
-      accent: '#6366F1',
-      badgeBg: 'bg-[#E3E7FC]',
-      badgeText: 'text-[#373A96]',
-      dot: 'bg-[#6366F1]',
-    },
-  },
   'visual-references': {
     id: 'visual-references',
     name: 'Visual References',
+    shortName: 'Visual',
     icon: '🎨',
     description: 'Aesthetic gems, editorial typography, palettes & textures',
     color: {
@@ -31,24 +17,10 @@ export const CATEGORIES: Record<CategoryId, Category> = {
       dot: 'bg-[#F43F5E]',
     },
   },
-  'things-i-noticed': {
-    id: 'things-i-noticed',
-    name: 'Things I Noticed',
-    icon: '🔎',
-    description: 'Everyday physical & digital observations, serendipity & quirks',
-    color: {
-      bg: 'bg-[#FEF6E9]',
-      border: 'border-[#FCE5C2]',
-      text: 'text-[#945512]',
-      accent: '#D97706',
-      badgeBg: 'bg-[#FBE9D0]',
-      badgeText: 'text-[#854B0E]',
-      dot: 'bg-[#D97706]',
-    },
-  },
   'product-ideas': {
     id: 'product-ideas',
     name: 'Product Ideas',
+    shortName: 'Product',
     icon: '💡',
     description: 'Fresh concepts, reimagined workflows & hook hypotheses',
     color: {
@@ -61,24 +33,10 @@ export const CATEGORIES: Record<CategoryId, Category> = {
       dot: 'bg-[#10B981]',
     },
   },
-  'things-to-explore': {
-    id: 'things-to-explore',
-    name: 'Things to Explore',
-    icon: '📌',
-    description: 'Spatial computing, intriguing repos, papers & curiosity seeds',
-    color: {
-      bg: 'bg-[#EEF7FE]',
-      border: 'border-[#D2EBFC]',
-      text: 'text-[#1C649B]',
-      accent: '#0284C7',
-      badgeBg: 'bg-[#DBF0FD]',
-      badgeText: 'text-[#165686]',
-      dot: 'bg-[#0284C7]',
-    },
-  },
   'experiments': {
     id: 'experiments',
-    name: 'Experiments',
+    name: 'Engineering',
+    shortName: 'Engineering',
     icon: '🧪',
     description: 'Interactive sandboxes, creative code & micro-prototypes',
     color: {
@@ -91,9 +49,64 @@ export const CATEGORIES: Record<CategoryId, Category> = {
       dot: 'bg-[#EA580C]',
     },
   },
+  'ux': {
+    id: 'ux',
+    name: 'UX Design',
+    shortName: 'UX',
+    icon: '🧠',
+    description: 'Interaction patterns, mental models & usability friction',
+    color: {
+      bg: 'bg-[#F0F2FE]',
+      border: 'border-[#D9DDFB]',
+      text: 'text-[#3E42A8]',
+      accent: '#6366F1',
+      badgeBg: 'bg-[#E3E7FC]',
+      badgeText: 'text-[#373A96]',
+      dot: 'bg-[#6366F1]',
+    },
+  },
+  'things-i-noticed': {
+    id: 'things-i-noticed',
+    name: 'Things I Noticed',
+    shortName: 'Observations',
+    icon: '🔎',
+    description: 'Everyday physical & digital observations, serendipity & quirks',
+    color: {
+      bg: 'bg-[#FEF6E9]',
+      border: 'border-[#FCE5C2]',
+      text: 'text-[#945512]',
+      accent: '#D97706',
+      badgeBg: 'bg-[#FBE9D0]',
+      badgeText: 'text-[#854B0E]',
+      dot: 'bg-[#D97706]',
+    },
+  },
+  'things-to-explore': {
+    id: 'things-to-explore',
+    name: 'Things to Explore',
+    shortName: 'Explorations',
+    icon: '📌',
+    description: 'Spatial computing, intriguing repos, papers & curiosity seeds',
+    color: {
+      bg: 'bg-[#EEF7FE]',
+      border: 'border-[#D2EBFC]',
+      text: 'text-[#1C649B]',
+      accent: '#0284C7',
+      badgeBg: 'bg-[#DBF0FD]',
+      badgeText: 'text-[#165686]',
+      dot: 'bg-[#0284C7]',
+    },
+  },
 };
 
-export const CATEGORY_LIST = Object.values(CATEGORIES);
+export const CATEGORY_LIST: Category[] = [
+  CATEGORIES['visual-references'],
+  CATEGORIES['product-ideas'],
+  CATEGORIES['experiments'],
+  CATEGORIES['ux'],
+  CATEGORIES['things-i-noticed'],
+  CATEGORIES['things-to-explore'],
+];
 
 export function getCategory(id: CategoryId): Category {
   return CATEGORIES[id] || CATEGORIES['things-to-explore'];

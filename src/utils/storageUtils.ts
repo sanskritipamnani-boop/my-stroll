@@ -1,23 +1,24 @@
 import { getDemoEntries } from '../data/sampleEntries';
 import type { Entry } from '../types';
 
-const STORAGE_KEY = 'stroll_exploration_entries_v2';
+const STORAGE_KEY = 'stroll_exploration_entries_v3';
 
 export function loadStoredEntries(): Entry[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-      return [];
+      const demo = getDemoEntries();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+      return demo;
     }
     const parsed = JSON.parse(data);
-    if (Array.isArray(parsed)) {
+    if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed;
     }
-    return [];
+    return getDemoEntries();
   } catch (err) {
     console.error('Failed to load entries from localStorage', err);
-    return [];
+    return getDemoEntries();
   }
 }
 

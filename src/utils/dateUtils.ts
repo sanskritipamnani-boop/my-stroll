@@ -85,11 +85,27 @@ export function formatDateFull(dateStr: string): string {
   });
 }
 
-export function formatHeaderDateRange(currentDate: Date, view: 'week' | 'month'): string {
+export function formatWallDate(dateStr: string): string {
+  const date = parseDateIso(dateStr);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
+}
+
+export function formatWallDayName(dateStr: string): string {
+  const date = parseDateIso(dateStr);
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return days[date.getDay()];
+}
+
+export function formatHeaderDateRange(currentDate: Date, view: 'week' | 'month' | 'wall'): string {
   const monthNames = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
     'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
   ];
+
+  if (view === 'wall') {
+    return 'TIMELINE MATRIX';
+  }
 
   if (view === 'month') {
     return `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;

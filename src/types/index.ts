@@ -9,6 +9,7 @@ export type CategoryId =
 export interface Category {
   id: CategoryId;
   name: string;
+  shortName?: string;
   icon: string; // Emoji
   lucideIconName?: string;
   color: {
@@ -38,7 +39,7 @@ export interface Entry {
   updatedAt?: string;
 }
 
-export type ViewMode = 'week' | 'month';
+export type ViewMode = 'wall' | 'month' | 'week';
 
 export interface FilterState {
   searchQuery: string;
