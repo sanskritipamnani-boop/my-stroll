@@ -367,12 +367,12 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               </div>
             )}
 
-            {/* Quick "+ Add Date" Column at the right end */}
-            <div className="w-[110px] shrink-0 p-2 flex items-center justify-center">
+            {/* Quick "+ Add Date" Column at the right end with spacing for top-right controls */}
+            <div className="w-[360px] shrink-0 p-2 flex items-center justify-start pl-3">
               <button
                 type="button"
                 onClick={() => onOpenAddEntry()}
-                className="w-full py-1.5 px-2 text-[11px] font-mono text-stone-500 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg border border-dashed border-stone-300 transition-colors flex items-center justify-center gap-1"
+                className="py-1.5 px-3 text-[11px] font-mono text-stone-500 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg border border-dashed border-stone-300 transition-colors flex items-center justify-center gap-1"
                 title="Add exploration on a new date"
               >
                 <Plus className="w-3 h-3" />
@@ -494,8 +494,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                       </div>
                     )}
 
-                    {/* Right spacer cell */}
-                    <div className="w-[110px] shrink-0 border-r border-transparent" />
+                    {/* Right spacer cell matching top controls clearance */}
+                    <div className="w-[360px] shrink-0 border-r border-transparent" />
 
                   </div>
                 );
@@ -512,110 +512,87 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* FLOATING BADGE & CONTROLS (Bottom-Left as in the reference image) */}
+      {/* CONTROLS PILL (Moved to Top-Right) */}
       {/* ========================================================================= */}
-      <div className="absolute bottom-4 left-4 z-40 flex flex-col items-start gap-2 max-w-sm pointer-events-none">
+      <div className="absolute top-2.5 sm:top-3 right-3 sm:right-4 z-40 pointer-events-auto inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-md text-stone-700">
         
-        {/* Floating Description Card (styled like "DESIGN SHAPED Portfolio wall") */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-stone-200/90 shadow-md max-w-[280px] sm:max-w-[320px] transition-all hover:shadow-lg">
-          <div className="text-[11px] font-mono font-bold tracking-wider text-amber-800 uppercase mb-0.5">
-            MY STROLL
-          </div>
-          <h2 className="serif-title font-semibold text-stone-900 text-base leading-snug">
-            Curiosity Wall
-          </h2>
-          <p className="text-[11px] text-stone-500 font-normal mt-1 leading-relaxed">
-            Curiosities, design references, and experiments laid out across date and craft.
-          </p>
+        {/* Zoom Out [-] */}
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          disabled={scale === 'sm'}
+          className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          title="Zoom out"
+        >
+          <ZoomOut className="w-3.5 h-3.5" />
+        </button>
 
-          <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-[10px] font-mono text-stone-400">
-            <span>{entries.length} explorations</span>
-            <span>{dates.length} timeline dates</span>
-          </div>
-        </div>
+        {/* Fit / Reset */}
+        <button
+          type="button"
+          onClick={() => {
+            setScale('md');
+            handleScrollToStart();
+          }}
+          className="px-2.5 py-1 text-xs font-mono font-semibold rounded-xl text-stone-700 hover:bg-stone-100 transition-colors"
+          title="Reset to initial view"
+        >
+          Fit
+        </button>
 
-        {/* Floating Zoom & View Controls Pill (styled like "[-] Fit [+]") */}
-        <div className="pointer-events-auto inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-md text-stone-700">
-          
-          {/* Zoom Out [-] */}
+        {/* Zoom In [+] */}
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          disabled={scale === 'lg'}
+          className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          title="Zoom in"
+        >
+          <ZoomIn className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="w-[1px] h-4 bg-stone-200 mx-0.5" />
+
+        {/* Jump to Latest Date */}
+        {latestDate && (
           <button
             type="button"
-            onClick={handleZoomOut}
-            disabled={scale === 'sm'}
-            className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-            title="Zoom out"
+            onClick={handleScrollToLatest}
+            className="px-2.5 py-1 text-[11px] font-mono font-semibold rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 transition-colors flex items-center gap-1 shadow-2xs"
+            title={`Jump to latest date: ${formatMatrixColumnDate(latestDate)}`}
           >
-            <ZoomOut className="w-3.5 h-3.5" />
+            <span>Latest</span>
+            <ArrowRight className="w-2.5 h-2.5" />
           </button>
+        )}
 
-          {/* Fit / Reset */}
+        {/* Grouping Toggle: Category vs Tag */}
+        <div className="w-[1px] h-4 bg-stone-200 mx-0.5" />
+        
+        <button
+          type="button"
+          onClick={() => setGroupBy(groupBy === 'category' ? 'tag' : 'category')}
+          className="px-2 py-1 text-[10px] font-mono rounded-xl hover:bg-stone-100 text-stone-600 flex items-center gap-1 transition-colors"
+          title="Toggle grouping between Category and Tags"
+        >
+          <Layers className="w-3 h-3 text-stone-500" />
+          <span className="capitalize">{groupBy}</span>
+        </button>
+
+        {groupBy === 'category' && (
           <button
             type="button"
-            onClick={() => {
-              setScale('md');
-              handleScrollToStart();
-            }}
-            className="px-2.5 py-1 text-xs font-mono font-semibold rounded-xl text-stone-700 hover:bg-stone-100 transition-colors"
-            title="Reset to initial view"
+            onClick={() => setShowAllCategories(!showAllCategories)}
+            className={`px-1.5 py-1 text-[10px] font-mono rounded-xl transition-colors ${
+              showAllCategories
+                ? 'bg-amber-100 text-amber-900 font-bold'
+                : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
+            }`}
+            title="Show all 6 categories or only active ones"
           >
-            Fit
+            {showAllCategories ? 'All rows' : 'Active'}
           </button>
-
-          {/* Zoom In [+] */}
-          <button
-            type="button"
-            onClick={handleZoomIn}
-            disabled={scale === 'lg'}
-            className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-            title="Zoom in"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-
-          <div className="w-[1px] h-4 bg-stone-200 mx-0.5" />
-
-          {/* Jump to Latest Date */}
-          {latestDate && (
-            <button
-              type="button"
-              onClick={handleScrollToLatest}
-              className="px-2 py-1 text-[11px] font-mono font-semibold rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 transition-colors flex items-center gap-1"
-              title={`Jump to latest date: ${formatMatrixColumnDate(latestDate)}`}
-            >
-              <span>Latest</span>
-              <ArrowRight className="w-2.5 h-2.5" />
-            </button>
-          )}
-
-          {/* Grouping Toggle: Category vs Tag */}
-          <div className="w-[1px] h-4 bg-stone-200 mx-0.5" />
-          
-          <button
-            type="button"
-            onClick={() => setGroupBy(groupBy === 'category' ? 'tag' : 'category')}
-            className="px-2 py-1 text-[10px] font-mono rounded-xl hover:bg-stone-100 text-stone-600 flex items-center gap-1 transition-colors"
-            title="Toggle grouping between Category and Tags"
-          >
-            <Layers className="w-3 h-3 text-stone-500" />
-            <span className="capitalize">{groupBy}</span>
-          </button>
-
-          {groupBy === 'category' && (
-            <button
-              type="button"
-              onClick={() => setShowAllCategories(!showAllCategories)}
-              className={`px-1.5 py-1 text-[10px] font-mono rounded-xl transition-colors ${
-                showAllCategories
-                  ? 'bg-amber-100 text-amber-900 font-bold'
-                  : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
-              }`}
-              title="Show all 6 categories or only active ones"
-            >
-              {showAllCategories ? 'All rows' : 'Active'}
-            </button>
-          )}
-
-        </div>
+        )}
 
       </div>
 
