@@ -39,7 +39,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
   editingEntry,
 }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<CategoryId>(initialCategory || 'product-ideas');
+  const [category, setCategory] = useState<CategoryId>(initialCategory || 'visual-references');
   const [date, setDate] = useState(initialDate || formatDateIso(new Date()));
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('11:00');
@@ -72,7 +72,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
     } else {
       // Reset for new entry
       setTitle('');
-      setCategory(initialCategory || 'product-ideas');
+      setCategory(initialCategory || 'visual-references');
       const baseDate = initialDate || formatDateIso(new Date());
       setDate(baseDate);
 
@@ -90,7 +90,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
       setTags([]);
       setTagInput('');
     }
-  }, [isOpen, editingEntry, initialDate, initialHour, initialCategory]);
+  }, [isOpen, editingEntry, initialDate, initialHour]);
 
   const handleAddTag = (tagToAdd: string) => {
     const cleaned = tagToAdd.trim().toLowerCase().replace(/^[#]/, '');

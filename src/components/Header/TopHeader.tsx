@@ -129,9 +129,9 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <div className="inline-flex p-1 rounded-2xl bg-stone-200/50 border border-stone-200/80">
             <button
               type="button"
-              onClick={() => onViewModeChange('wall')}
-              className={`px-3 py-1 text-xs font-medium rounded-xl transition-all ${
-                viewMode === 'wall'
+              onClick={() => onViewModeChange('matrix')}
+              className={`px-3.5 py-1 text-xs font-medium rounded-xl transition-all ${
+                viewMode === 'matrix'
                   ? 'bg-white text-stone-900 shadow-xs font-semibold'
                   : 'text-stone-600 hover:text-stone-900'
               }`}
@@ -140,25 +140,25 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => onViewModeChange('month')}
-              className={`px-3 py-1 text-xs font-medium rounded-xl transition-all ${
-                viewMode === 'month'
-                  ? 'bg-white text-stone-900 shadow-xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Month
-            </button>
-            <button
-              type="button"
               onClick={() => onViewModeChange('week')}
-              className={`px-3 py-1 text-xs font-medium rounded-xl transition-all ${
+              className={`px-3.5 py-1 text-xs font-medium rounded-xl transition-all ${
                 viewMode === 'week'
                   ? 'bg-white text-stone-900 shadow-xs font-semibold'
                   : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               Week
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('month')}
+              className={`px-3.5 py-1 text-xs font-medium rounded-xl transition-all ${
+                viewMode === 'month'
+                  ? 'bg-white text-stone-900 shadow-xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Month
             </button>
           </div>
 

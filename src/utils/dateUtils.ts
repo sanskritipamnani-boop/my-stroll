@@ -85,27 +85,36 @@ export function formatDateFull(dateStr: string): string {
   });
 }
 
-export function formatWallDate(dateStr: string): string {
-  const date = parseDateIso(dateStr);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
+export function formatMatrixColumnDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const [yearStr, monthStr, dayStr] = dateStr.split('-');
+  const y = parseInt(yearStr, 10);
+  const m = parseInt(monthStr, 10);
+  const d = parseInt(dayStr, 10);
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return dateStr;
+  const dateObj = new Date(y, m - 1, d);
+  const monthName = dateObj.toLocaleDateString('en-US', { month: 'short' });
+  return `${monthName} ${d} ${y}`;
 }
 
-export function formatWallDayName(dateStr: string): string {
-  const date = parseDateIso(dateStr);
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return days[date.getDay()];
-}
+export function formatHeaderDateRange(
+  currentDate: Date,
+  view: 'matrix' | 'week' | 'month',
+  matrixDateRange?: { start?: string; end?: string; count?: number }
+): string {
+  if (view === 'matrix') {
+    if (matrixDateRange?.start && matrixDateRange?.end) {
+      const s = formatMatrixColumnDate(matrixDateRange.start);
+      const e = formatMatrixColumnDate(matrixDateRange.end);
+      return s === e ? s : `${s} — ${e}`;
+    }
+    return 'Timeline Matrix';
+  }
 
-export function formatHeaderDateRange(currentDate: Date, view: 'week' | 'month' | 'wall'): string {
   const monthNames = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
     'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
   ];
-
-  if (view === 'wall') {
-    return 'TIMELINE MATRIX';
-  }
 
   if (view === 'month') {
     return `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;

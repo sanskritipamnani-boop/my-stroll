@@ -4,7 +4,7 @@ import { loadStoredEntries, saveStoredEntries, clearAllEntries, loadDemoSampleEn
 import { formatHeaderDateRange, addWeeks, addMonths, formatDateIso } from './utils/dateUtils';
 import { shiftEntryTime } from './utils/calendarUtils';
 import { TopHeader } from './components/Header/TopHeader';
-import { WallView } from './components/Calendar/WallView';
+import { MatrixView } from './components/Calendar/MatrixView';
 import { WeekView } from './components/Calendar/WeekView';
 import { MonthView } from './components/Calendar/MonthView';
 import { EntryModal } from './components/Entry/EntryModal';
@@ -15,7 +15,8 @@ import { Sparkles, Info } from 'lucide-react';
 export function App() {
   // Center dynamically on the current date
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>('wall');
+  // Default to the new Wall / Matrix view layout
+  const [viewMode, setViewMode] = useState<ViewMode>('matrix');
   const [entries, setEntries] = useState<Entry[]>(() => loadStoredEntries());
 
   // Filter State
@@ -28,7 +29,8 @@ export function App() {
 
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [slotQuickAdd, setSlotQuickAdd] = useState<{ dateStr: string; hour?: number; category?: CategoryId } | null>(null);
+  const [slotQuickAdd, setSlotQuickAdd] = useState<{ dateStr: string; hour: number } | null>(null);
+  const [presetAdd, setPresetAdd] = useState<{ dateStr?: string; categoryId?: CategoryId } | null>(null);
   const [inspectingEntry, setInspectingEntry] = useState<Entry | null>(null);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
@@ -135,6 +137,7 @@ export function App() {
     }
     setEditingEntry(null);
     setSlotQuickAdd(null);
+    setPresetAdd(null);
   };
 
   const handleDeleteEntry = (id: string) => {
@@ -144,35 +147,33 @@ export function App() {
     }
   };
 
-  // Drag and Drop rescheduling & re-categorizing handler
-  const handleMoveEntry = (
-    entryId: string,
-    targetDate: string,
-    targetSecondArg?: string | CategoryId,
-    targetCategory?: CategoryId
-  ) => {
-    let newCategory: CategoryId | undefined = targetCategory;
-    let newStartTime: string | undefined = undefined;
-
-    if (typeof targetSecondArg === 'string') {
-      if (targetSecondArg.includes(':')) {
-        newStartTime = targetSecondArg;
-      } else {
-        newCategory = targetSecondArg as CategoryId;
-      }
-    }
-
+  // Drag and Drop rescheduling handler for Week view
+  const handleMoveEntry = (entryId: string, targetDate: string, targetStartTime: string) => {
     setEntries((prev) =>
       prev.map((entry) => {
         if (entry.id === entryId) {
-          let updated = { ...entry, date: targetDate };
-          if (newCategory) {
-            updated.category = newCategory;
-          }
-          if (newStartTime) {
-            return shiftEntryTime(updated, targetDate, newStartTime);
-          }
-          return updated;
+          return shiftEntryTime(entry, targetDate, targetStartTime);
+        }
+        return entry;
+      })
+    );
+  };
+
+  // Drag and Drop handler for Matrix Wall view (moving date & category)
+  const handleMoveMatrixEntry = (
+    entryId: string,
+    targetDate: string,
+    targetCategory?: CategoryId
+  ) => {
+    setEntries((prev) =>
+      prev.map((entry) => {
+        if (entry.id === entryId) {
+          return {
+            ...entry,
+            date: targetDate,
+            category: targetCategory || entry.category,
+            updatedAt: new Date().toISOString(),
+          };
         }
         return entry;
       })
@@ -192,16 +193,19 @@ export function App() {
     setCurrentDate(new Date());
   };
 
-  // Quick slot click in calendar
+  // Quick slot click in week calendar
   const handleSlotClick = (dateStr: string, timeHour: number) => {
     setEditingEntry(null);
+    setPresetAdd(null);
     setSlotQuickAdd({ dateStr, hour: timeHour });
     setIsAddModalOpen(true);
   };
 
-  const handleOpenAddModal = (dateStr?: string, category?: CategoryId) => {
+  // Quick add from Matrix Wall view
+  const handleMatrixQuickAdd = (presetDate?: string, presetCategory?: CategoryId) => {
     setEditingEntry(null);
-    setSlotQuickAdd(dateStr ? { dateStr, category } : null);
+    setSlotQuickAdd(null);
+    setPresetAdd({ dateStr: presetDate, categoryId: presetCategory });
     setIsAddModalOpen(true);
   };
 
@@ -211,7 +215,21 @@ export function App() {
     setViewMode('week');
   };
 
-  const headerDateRange = formatHeaderDateRange(currentDate, viewMode);
+  // Matrix Date Range for top header
+  const matrixDateRange = useMemo(() => {
+    if (filteredEntries.length === 0) return undefined;
+    const sortedDates = Array.from(new Set(filteredEntries.map((e) => e.date))).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
+    if (sortedDates.length === 0) return undefined;
+    return {
+      start: sortedDates[0],
+      end: sortedDates[sortedDates.length - 1],
+      count: sortedDates.length,
+    };
+  }, [filteredEntries]);
+
+  const headerDateRange = formatHeaderDateRange(currentDate, viewMode, matrixDateRange);
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] text-stone-800 flex flex-col font-sans">
@@ -225,7 +243,12 @@ export function App() {
         onPrev={handlePrev}
         onNext={handleNext}
         onToday={handleToday}
-        onOpenAddEntry={() => handleOpenAddModal()}
+        onOpenAddEntry={() => {
+          setEditingEntry(null);
+          setSlotQuickAdd(null);
+          setPresetAdd(null);
+          setIsAddModalOpen(true);
+        }}
         onToggleFilters={() => setIsFilterOpen(!isFilterOpen)}
         isFilterOpen={isFilterOpen}
         activeFilterCount={activeFilterCount}
@@ -235,11 +258,11 @@ export function App() {
       />
 
       {/* Main Calendar Content Area */}
-      <main className={`flex-1 w-full flex flex-col ${viewMode === 'wall' ? 'p-0' : 'max-w-[1720px] mx-auto p-3 sm:p-5 lg:p-6'}`}>
+      <main className="flex-1 max-w-[1720px] w-full mx-auto p-3 sm:p-5 lg:p-6 flex flex-col">
         
         {/* Active Filter Notification Pill (if filtering) */}
         {activeFilterCount > 0 && (
-          <div className="m-3 px-4 py-2 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-between text-xs text-amber-900 shadow-2xs">
+          <div className="mb-3 px-4 py-2 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-between text-xs text-amber-900 shadow-2xs">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-600" />
               <span>
@@ -264,14 +287,13 @@ export function App() {
 
         {/* View Component */}
         <div className="flex-1">
-          {viewMode === 'wall' ? (
-            <WallView
+          {viewMode === 'matrix' ? (
+            <MatrixView
               entries={filteredEntries}
               onSelectEntry={(entry) => setInspectingEntry(entry)}
-              onEditEntry={(entry) => setEditingEntry(entry)}
-              onDeleteEntry={handleDeleteEntry}
-              onOpenAddEntry={handleOpenAddModal}
-              onMoveEntry={handleMoveEntry}
+              onOpenAddEntry={handleMatrixQuickAdd}
+              onMoveEntry={handleMoveMatrixEntry}
+              onLoadDemoSample={handleLoadDemoSample}
             />
           ) : viewMode === 'week' ? (
             <WeekView
@@ -279,7 +301,12 @@ export function App() {
               entries={filteredEntries}
               onSelectEntry={(entry) => setInspectingEntry(entry)}
               onSlotClick={handleSlotClick}
-              onOpenAddEntry={() => handleOpenAddModal()}
+              onOpenAddEntry={() => {
+                setEditingEntry(null);
+                setSlotQuickAdd(null);
+                setPresetAdd(null);
+                setIsAddModalOpen(true);
+              }}
               onMoveEntry={handleMoveEntry}
             />
           ) : (
@@ -292,20 +319,22 @@ export function App() {
           )}
         </div>
 
-        {/* Footer Editorial Subtext (shown on week / month views) */}
-        {viewMode !== 'wall' && (
-          <footer className="mt-6 pt-4 border-t border-stone-200/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-400 px-2">
-            <div className="flex items-center gap-1.5 font-mono">
-              <Info className="w-3.5 h-3.5" />
-              <span>Click any slot to add. Drag & drop cards anywhere to reschedule.</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="serif-title italic">Personal Map of Curiosity</span>
-              <span>•</span>
-              <span className="font-mono">{entries.length} discoveries</span>
-            </div>
-          </footer>
-        )}
+        {/* Footer Editorial Subtext */}
+        <footer className="mt-4 pt-3 border-t border-stone-200/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-400">
+          <div className="flex items-center gap-1.5 font-mono">
+            <Info className="w-3.5 h-3.5" />
+            <span>
+              {viewMode === 'matrix'
+                ? 'Timeline Wall: Dates are sorted horizontally, topics vertically. Click cards to view, drag to move.'
+                : 'Click any slot to add. Drag & drop cards anywhere to reschedule.'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="serif-title italic">Personal Map of Curiosity</span>
+            <span>•</span>
+            <span className="font-mono">{entries.length} discoveries</span>
+          </div>
+        </footer>
 
       </main>
 
@@ -316,11 +345,12 @@ export function App() {
           setIsAddModalOpen(false);
           setEditingEntry(null);
           setSlotQuickAdd(null);
+          setPresetAdd(null);
         }}
         onSave={handleSaveEntry}
-        initialDate={slotQuickAdd?.dateStr || formatDateIso(currentDate)}
+        initialDate={presetAdd?.dateStr || slotQuickAdd?.dateStr || formatDateIso(currentDate)}
         initialHour={slotQuickAdd?.hour}
-        initialCategory={slotQuickAdd?.category}
+        initialCategory={presetAdd?.categoryId}
         editingEntry={editingEntry}
       />
 

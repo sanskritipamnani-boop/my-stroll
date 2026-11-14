@@ -4,7 +4,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   'visual-references': {
     id: 'visual-references',
     name: 'Visual References',
-    shortName: 'Visual',
+    craftName: 'Visual',
     icon: '🎨',
     description: 'Aesthetic gems, editorial typography, palettes & textures',
     color: {
@@ -20,7 +20,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   'product-ideas': {
     id: 'product-ideas',
     name: 'Product Ideas',
-    shortName: 'Product',
+    craftName: 'Product',
     icon: '💡',
     description: 'Fresh concepts, reimagined workflows & hook hypotheses',
     color: {
@@ -35,8 +35,8 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   },
   'experiments': {
     id: 'experiments',
-    name: 'Engineering',
-    shortName: 'Engineering',
+    name: 'Experiments',
+    craftName: 'Engineering',
     icon: '🧪',
     description: 'Interactive sandboxes, creative code & micro-prototypes',
     color: {
@@ -51,8 +51,8 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   },
   'ux': {
     id: 'ux',
-    name: 'UX Design',
-    shortName: 'UX',
+    name: 'UX',
+    craftName: 'UX',
     icon: '🧠',
     description: 'Interaction patterns, mental models & usability friction',
     color: {
@@ -68,7 +68,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   'things-i-noticed': {
     id: 'things-i-noticed',
     name: 'Things I Noticed',
-    shortName: 'Observations',
+    craftName: 'Observations',
     icon: '🔎',
     description: 'Everyday physical & digital observations, serendipity & quirks',
     color: {
@@ -84,7 +84,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   'things-to-explore': {
     id: 'things-to-explore',
     name: 'Things to Explore',
-    shortName: 'Explorations',
+    craftName: 'Explorations',
     icon: '📌',
     description: 'Spatial computing, intriguing repos, papers & curiosity seeds',
     color: {
@@ -99,14 +99,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   },
 };
 
-export const CATEGORY_LIST: Category[] = [
-  CATEGORIES['visual-references'],
-  CATEGORIES['product-ideas'],
-  CATEGORIES['experiments'],
-  CATEGORIES['ux'],
-  CATEGORIES['things-i-noticed'],
-  CATEGORIES['things-to-explore'],
-];
+export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export function getCategory(id: CategoryId): Category {
   return CATEGORIES[id] || CATEGORIES['things-to-explore'];
